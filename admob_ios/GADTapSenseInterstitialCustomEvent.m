@@ -28,7 +28,6 @@
     BOOL videoOnly = [info objectForKey:@"videoOnly"] ? [[info objectForKey:@"videoOnly"] boolValue] : NO;
     BOOL adFlowOnly = [info objectForKey:@"adFlowOnly"] ? [[info objectForKey:@"adFlowOnly"] boolValue] : NO;
     [TapSenseAds disableGetNextAd];
-    [TapSenseAds enableDebugLog:YES];
     [TapSenseAds enableAdFlowOnly:adFlowOnly];
     [TapSenseAds enableVideoOnly:videoOnly];
 

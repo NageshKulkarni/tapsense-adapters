@@ -84,9 +84,4 @@
     [self.delegate customEventBannerDidDismissModal:self];
 }
 
-- (void) adViewWillLeaveApplication:(TSAdView *)view
-{
-    [self.delegate customEventBannerWillLeaveApplication:self];
-}
-
 @end
