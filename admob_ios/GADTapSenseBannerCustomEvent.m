@@ -1,20 +1,23 @@
 //
-//  MPTapSenseBannerCustomEvent.m
+//  GADTapSenseBannerCustomEvent.m
 //  TapSense
 //
 //  Copyright (c) 2014 TapSense. All rights reserved.
 //
 
-#import "MPTapSenseBannerCustomEvent.h"
+#import "GADTapSenseBannerCustomEvent.h"
 
-@interface MPTapSenseBannerCustomEvent ()
+@interface GADTapSenseBannerCustomEvent ()
 
 @property (nonatomic, retain) TSAdView *adBannerView;
 
 @end
 
 
-@implementation MPTapSenseBannerCustomEvent
+@implementation GADTapSenseBannerCustomEvent
+
+@synthesize delegate = delegate_;
+
 
 - (id)init
 {
@@ -28,12 +31,21 @@
 
 - (void)dealloc
 {
+    self.delegate = nil;
     self.adBannerView.delegate = nil;
     self.adBannerView = nil;
 }
 
-- (void)requestAdWithSize:(CGSize)size customEventInfo:(NSDictionary *)info
+- (void)requestBannerAd:(GADAdSize)adSize
+              parameter:(NSString *)serverParameter
+                  label:(NSString *)serverLabel
+                request:(GADCustomEventRequest *)request
 {
+    NSError *error = nil;
+    NSDictionary *info =
+    [NSJSONSerialization JSONObjectWithData: [serverParameter dataUsingEncoding:NSUTF8StringEncoding]
+                                    options: NSJSONReadingMutableContainers
+                                      error: &error];
     NSString *pubId = [info objectForKey:@"pubId"] ? [info objectForKey:@"pubId"] : @"";
     NSString *appId = [info objectForKey:@"appId"] ? [info objectForKey:@"appId"] : @"";
     NSString *secretKey = [info objectForKey:@"secretKey"] ? [info objectForKey:@"secretKey"] : @"";
@@ -42,8 +54,8 @@
     
     //change test mode to NO before submitting to App Store.
     [TapSenseAds startInTestMode:YES withPubId:pubId appId:appId secretKey:secretKey];
-    self.adBannerView = [[TSAdView alloc] initWithAdUnitId:adUnitId size:size];
-    self.adBannerView.rootViewController = [self.delegate viewControllerForPresentingModalView];
+    self.adBannerView = [[TSAdView alloc] initWithAdUnitId:adUnitId size:adSize.size];
+    self.adBannerView.rootViewController = self.delegate.viewControllerForPresentingModalView;
     self.adBannerView.delegate = self;
     [self.adBannerView loadAd];
 }
@@ -53,27 +65,28 @@
 
 - (void) adViewDidLoadAd:(TSAdView *)view
 {
-    [self.delegate bannerCustomEvent:self didLoadAd:self.adBannerView];
+    [self.delegate customEventBanner:self didReceiveAd:view];
 }
 
 - (void) adViewDidFailToLoad:(TSAdView *)view
 {
-    [self.delegate bannerCustomEvent:self didFailToLoadAdWithError:nil];
+    [self.delegate customEventBanner:self didFailAd:nil];
 }
 
 - (void) adViewWillPresentModalView:(TSAdView *)view
 {
-    [self.delegate bannerCustomEventWillBeginAction:self];
+    [self.delegate customEventBannerWillPresentModal:self];
 }
 
 - (void) adViewDidDismissModalView:(TSAdView *)view
 {
-    [self.delegate bannerCustomEventDidFinishAction:self];
+    [self.delegate customEventBannerWillDismissModal:self];
+    [self.delegate customEventBannerDidDismissModal:self];
 }
 
 - (void) adViewWillLeaveApplication:(TSAdView *)view
 {
-    [self.delegate bannerCustomEventWillLeaveApplication:self];
+    [self.delegate customEventBannerWillLeaveApplication:self];
 }
 
 @end
