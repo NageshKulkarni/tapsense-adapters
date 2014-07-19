@@ -6,13 +6,16 @@ import android.app.Activity;
 import android.content.Context;
 
 import com.tapsense.android.publisher.TSErrorCode;
+import com.tapsense.android.publisher.TSKeywordMap;
 import com.tapsense.android.publisher.TapSenseAds;
-import com.tapsense.android.publisher.TapSenseAdsListener;
+import com.tapsense.android.publisher.TapSenseInterstitial;
+import com.tapsense.android.publisher.TapSenseInterstitialListener;
 
-public class TapSenseInterstitial extends CustomEventInterstitial implements
-    TapSenseAdsListener {
+public class TapSenseMoPubInterstitialAdapter extends CustomEventInterstitial
+    implements TapSenseInterstitialListener {
 
   private CustomEventInterstitialListener mInterstitialListener;
+  private TapSenseInterstitial mInterstitial;
 
   @Override
   protected void loadInterstitial(Context context,
@@ -26,53 +29,41 @@ public class TapSenseInterstitial extends CustomEventInterstitial implements
       return;
     }
 
-    String pubId = serverExtras.containsKey("pubId") ? serverExtras
-        .get("pubId") : "";
-    String appId = serverExtras.containsKey("appId") ? serverExtras
-        .get("appId") : "";
-    String secretKey = serverExtras.containsKey("secretKey") ? serverExtras
-        .get("secretKey") : "";
     String adUnitId = serverExtras.containsKey("adUnitId") ? serverExtras
         .get("adUnitId") : "";
-    boolean videoOnly = serverExtras.containsKey("videoOnly") ? Boolean
-        .valueOf(serverExtras.get("videoOnly")) : false;
-    boolean adFlowOnly = serverExtras.containsKey("adFlowOnly") ? Boolean
-        .valueOf(serverExtras.get("adFlowOnly")) : false;
-
-    TapSenseAds.disableGetNextAd();
-    TapSenseAds.enableVideoOnly(videoOnly);
-    TapSenseAds.enableAdFlowOnly(adFlowOnly);
-    TapSenseAds.setInterstitialAdUnitId(adUnitId);
 
     // Remove this before submitting to Play Store
     TapSenseAds.setTestMode();
+    TapSenseAds.setShowDebugLog();
 
-    TapSenseAds.start(context, pubId, appId, secretKey);
-    TapSenseAds.getInstance().setListener(this);
-    TapSenseAds.getInstance().requestAd();
+    mInterstitial = new TapSenseInterstitial(context, adUnitId, false,
+        TSKeywordMap.EMPTY_TS_KEYWORD_MAP);
+    mInterstitial.setListener(this);
+    mInterstitial.requestAd();
   }
 
   @Override
   protected void showInterstitial() {
-    TapSenseAds.getInstance().showAd();
-  }
-
-  @Override
-  protected void onInvalidate() {
-    if (TapSenseAds.getInstance() != null) {
-      TapSenseAds.getInstance().setListener(null);
+    if (mInterstitial.isReady()) {
+      mInterstitial.showAd();
     }
   }
 
   @Override
-  public void onTapSenseAdDismissed() {
+  protected void onInvalidate() {
+    mInterstitial.destroy();
+  }
+
+  @Override
+  public void onInterstitialDismissed(TapSenseInterstitial interstitial) {
     if (mInterstitialListener != null) {
       mInterstitialListener.onInterstitialDismissed();
     }
   }
 
   @Override
-  public void onTapSenseAdFailedToLoad(TSErrorCode errorCode) {
+  public void onInterstitialFailedToLoad(TapSenseInterstitial interstitial,
+      TSErrorCode errorCode) {
     if (mInterstitialListener != null) {
       mInterstitialListener
           .onInterstitialFailed(MoPubErrorCode.NETWORK_NO_FILL);
@@ -80,14 +71,14 @@ public class TapSenseInterstitial extends CustomEventInterstitial implements
   }
 
   @Override
-  public void onTapSenseAdLoaded() {
+  public void onInterstitialLoaded(TapSenseInterstitial interstitial) {
     if (mInterstitialListener != null) {
       mInterstitialListener.onInterstitialLoaded();
     }
   }
 
   @Override
-  public void onTapSenseAdShown() {
+  public void onInterstitialShown(TapSenseInterstitial interstitial) {
     if (mInterstitialListener != null) {
       mInterstitialListener.onInterstitialShown();
     }

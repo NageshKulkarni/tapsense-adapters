@@ -1,4 +1,4 @@
-package com.tapsense.android.admob.adapters.sample;
+package com.tapsense.adapters;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -9,14 +9,13 @@ import com.google.ads.AdSize;
 import com.google.ads.mediation.MediationAdRequest;
 import com.google.ads.mediation.customevent.CustomEventBanner;
 import com.google.ads.mediation.customevent.CustomEventBannerListener;
-import com.tapsense.android.publisher.TSAdSize;
-import com.tapsense.android.publisher.TSAdView;
-import com.tapsense.android.publisher.TSAdViewListener;
 import com.tapsense.android.publisher.TSErrorCode;
+import com.tapsense.android.publisher.TapSenseAdView;
+import com.tapsense.android.publisher.TapSenseAdViewListener;
 import com.tapsense.android.publisher.TapSenseAds;
 
 public class TapSenseAdMobBannerAdapter implements CustomEventBanner,
-    TSAdViewListener {
+    TapSenseAdViewListener {
 
   CustomEventBannerListener mBannerListener;
 
@@ -28,18 +27,13 @@ public class TapSenseAdMobBannerAdapter implements CustomEventBanner,
     try {
       // Remove test mode before going live
       TapSenseAds.setTestMode();
-      TapSenseAds.enableDebugLog();
-      TapSenseAds.disableGetNextAd(); 
+      TapSenseAds.setShowDebugLog();
 
       mBannerListener = listener;
 
       JSONObject serverParameterJson = new JSONObject(serverParameter);
-      TapSenseAds.start(activity, serverParameterJson.getString("pubId"),
-          serverParameterJson.getString("appId"),
-          serverParameterJson.getString("secretKey"));
 
-      TSAdView bannerView = new TSAdView(activity);
-      bannerView.setAdSize(new TSAdSize(adSize.getWidth(), adSize.getHeight()));
+      TapSenseAdView bannerView = new TapSenseAdView(activity);
       bannerView.setAdUnitId(serverParameterJson.getString("adUnitId"));
       bannerView.setAdViewListener(this);
 
@@ -51,29 +45,29 @@ public class TapSenseAdMobBannerAdapter implements CustomEventBanner,
   }
 
   @Override
-  public void onAdViewLoaded(TSAdView adView) {
+  public void onAdViewLoaded(TapSenseAdView adView) {
     mBannerListener.onReceivedAd(adView);
   }
 
   @Override
-  public void onAdViewFailedToLoad(TSAdView adView, TSErrorCode errorCode) {
+  public void onAdViewFailedToLoad(TapSenseAdView adView, TSErrorCode errorCode) {
     mBannerListener.onFailedToReceiveAd();
   }
 
   @Override
-  public void onAdViewExpanded(TSAdView adView) {
+  public void onAdViewExpanded(TapSenseAdView adView) {
     mBannerListener.onPresentScreen();
   }
 
   @Override
-  public void onAdViewCollapsed(TSAdView adView) {
+  public void onAdViewCollapsed(TapSenseAdView adView) {
     mBannerListener.onDismissScreen();
   }
 
   @Override
   public void destroy() {
     // TODO Auto-generated method stub
-    
+
   }
 
 }
