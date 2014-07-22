@@ -28,7 +28,6 @@ public class TapSenseAdMobInterstitialAdapter implements
     try {
       // Remove test mode before going live
       TapSenseAds.setTestMode();
-      TapSenseAds.setShowDebugLog();
 
       mInterstitialListener = listener;
 

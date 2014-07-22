@@ -27,7 +27,6 @@ public class TapSenseAdMobBannerAdapter implements CustomEventBanner,
     try {
       // Remove test mode before going live
       TapSenseAds.setTestMode();
-      TapSenseAds.setShowDebugLog();
 
       mBannerListener = listener;
 

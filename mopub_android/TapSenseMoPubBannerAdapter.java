@@ -32,7 +32,6 @@ public class TapSenseMoPubBannerAdapter extends CustomEventBanner implements
 
     // Remove this before submitting to Play Store
     TapSenseAds.setTestMode();
-    TapSenseAds.setShowDebugLog();
 
     TapSenseAdView bannerView = new TapSenseAdView(context);
 

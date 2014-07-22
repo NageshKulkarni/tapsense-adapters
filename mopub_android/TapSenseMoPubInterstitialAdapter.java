@@ -34,7 +34,6 @@ public class TapSenseMoPubInterstitialAdapter extends CustomEventInterstitial
 
     // Remove this before submitting to Play Store
     TapSenseAds.setTestMode();
-    TapSenseAds.setShowDebugLog();
 
     mInterstitial = new TapSenseInterstitial(context, adUnitId, false,
         TSKeywordMap.EMPTY_TS_KEYWORD_MAP);
